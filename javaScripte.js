@@ -7,7 +7,7 @@
     o.textContent=c;
     sel.appendChild(o)});
 
-  var prices={"1":199,"2":389}, total=document.getElementById('total');
+  var prices={"1":199,"2":379}, total=document.getElementById('total');
   document.querySelectorAll('input[name=offer]').forEach(function(r){
     r.addEventListener('change',function(){total.textContent=prices[r.value]+' درهم'})});
 
@@ -52,7 +52,7 @@ function sendWhatsApp(e) {
   // Récupérer l'offre sélectionnée
   let offre = document.querySelector('input[name="offer"]:checked').value;
 
-  let prix = offre === "1" ? "200 DH" : "400 DH";
+  let prix = offre === "1" ? "199 DH" : "379 DH";
 
   let message = `commende:
 Nom: ${nom}
