@@ -83,7 +83,8 @@
     <span class="fr">Passez votre commande</span>
     <p class="lede">عمّري المعلومات، وفريقنا غادي يتاصل بيك باش يأكد الطلب.</p>
 
-    <form onsubmit="sendWhatsApp(event)" class="form" id="f" novalidate>
+    <form action="https://api.web3forms.com/submit" method="POST" class="form" id="f" novalidate>
+       <input type="hidden" name="access_key" value="2daed259-f0a3-4b2b-a0cb-592db653ac8d">
       <div id="fields">
         <div class="field">
           <label for="name">الاسم الكامل<span>Nom complet</span></label>

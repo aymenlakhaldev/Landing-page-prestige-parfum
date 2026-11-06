@@ -20,51 +20,45 @@
   function setErr(id,msg){var el=document.getElementById(id);
     document.getElementById('e-'+id).textContent=msg;el.classList.toggle('invalid',!!msg);return !msg}
 
-  document.getElementById('f').addEventListener('submit',function(e){
+    document.getElementById('f').addEventListener('submit',function(e){
     e.preventDefault();
+    var form=this;
     var name=document.getElementById('name').value.trim();
     var tel=phone.value.replace(/\D/g,'');
     var ok=setErr('name',name.length<3?'عافاك كتبي الاسم الكامل ديالك.':'');
     ok=setErr('phone',/^0[567]\d{8}$/.test(tel)?'':'الرقم خاصو يكون فيه 10 أرقام ويبدا ب 05 أو 06 أو 07.')&&ok;
     ok=setErr('city',sel.value?'':'عافاك اختاري المدينة ديالك.')&&ok;
     if(!ok){var first=document.querySelector('.invalid');first&&first.focus();return}
-    var order={name:name,phone:tel,city:sel.value,offer:document.querySelector('input[name=offer]:checked').value,
-      total:prices[document.querySelector('input[name=offer]:checked').value],date:new Date().toISOString()};
-    // TODO: send `order` to Google Sheets / webhook here
-    console.log('order',order);
-    document.getElementById('fields').hidden=true;
-    document.getElementById('thanks').hidden=false;
-  });
 
-  var sticky=document.getElementById('sticky'), form=document.getElementById('order');
-  if('IntersectionObserver' in window){
-    new IntersectionObserver(function(en){sticky.classList.toggle('hide',en[0].isIntersecting)},{threshold:.1}).observe(form);
-  }
+    var offerVal=document.querySelector('input[name=offer]:checked').value;
+    var labels={"1":"Pack 1 (4 عطور) - 199 DH","2":"Pack 2 (8 عطور) - 379 DH"};
+
+    var data=new FormData(form);
+    data.set('phone',tel);
+    data.set('offer',labels[offerVal]);
+    data.set('total',prices[offerVal]+' DH');
+    data.set('subject','Nouvelle commande - Prestige Parfum');
+
+    var btn=form.querySelector('button[type="submit"]');
+    var oldText=btn.textContent;
+    btn.disabled=true;
+    btn.textContent='...';
+
+    fetch('https://api.web3forms.com/submit',{method:'POST',body:data})
+      .then(function(r){return r.json()})
+      .then(function(res){
+        if(res.success){
+          document.getElementById('fields').hidden=true;
+          document.getElementById('thanks').hidden=false;
+        }else{
+          throw new Error('failed');
+        }
+      })
+      .catch(function(){
+        alert('وقع مشكل، عاود جرب من فضلك');
+        btn.disabled=false;
+        btn.textContent=oldText;
+      });
+  });
 })();
 
-function sendWhatsApp(e) {
-  e.preventDefault();
-
-  let nom = document.getElementById("name").value;
-  let tel = document.getElementById("phone").value;
-  let Ville = document.getElementById("city").value;
-
-  // Récupérer l'offre sélectionnée
-  let offre = document.querySelector('input[name="offer"]:checked').value;
-
-  let prix = offre === "1" ? "199 DH" : "379 DH";
-
-  let message = `commende:
-Nom: ${nom}
-Téléphone: ${tel}
-Ville: ${Ville}
-Offre : ${offre} pack(s)
-Prix total : ${prix}`;
-
-  let numero = "212774046851";
-
-  window.open(
-    `https://wa.me/${numero}?text=${encodeURIComponent(message)}`,
-    "_blank"
-  );
-}
